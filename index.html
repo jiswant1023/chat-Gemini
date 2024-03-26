@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gemini</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="user_input_div">
+        <input title="user_input" type="text" id="user_input" />
+        <button title="search_button" id="search_button">Search</button>
+      </div>
+
+      <div class="msg_container">
+        <div class="user_msg">User: Hello</div>
+        <div class="bot_msg">Bot: Hi, How can i assist you.</div>
+      </div>
+    </main>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import { GoogleGenerativeAI } from "@google/generative-ai";
+
+      const API_KEY = "AIzaSyDQ2UMTKHOnrZavd4iDAHMILv0nNeCZkJE";
+      // Access your API key (see "Set up your API key" above)
+      const genAI = new GoogleGenerativeAI(API_KEY);
+
+      async function run() {
+        let botMsg=document.querySelector(".bot_msg");
+        console.log("run");
+        botMsg.innerHTML="Loading.......";
+        // For text-only input, use the gemini-pro model
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        
+        //user Input Part
+        let userInput=document.querySelector("#user_input");
+        let userInputDivContainer=document.createElement("div");
+        userInputDivContainer.textContent=`User: ${userInput.value}`;
+        let userMsg=document.querySelector(".user_msg");
+        userMsg.innerHTML="";
+        userMsg.appendChild(userInputDivContainer);
+
+
+        const prompt = userInput.value;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        //bot Output Part
+        let botMsgDivContainer=document.createElement("div");
+        botMsgDivContainer.textContent=`Bot: ${text}`;
+        botMsg.innerHTML="";
+        botMsg.appendChild(botMsgDivContainer);
+
+        console.log(text);
+        userInput.value="";
+      }
+      document.getElementById("search_button").addEventListener("click",run); 
+    </script>
+
+    <script src="script.js"></script>
+  </body>
+</html>
